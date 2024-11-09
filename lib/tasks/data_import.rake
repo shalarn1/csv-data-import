@@ -15,7 +15,7 @@ namespace :data_import do
     descriptions = Set.new
     violation_risk_description_types = Hash.new { |h, k| h[k] = Set.new }
 
-    log = nil
+    log = "a violation type only has exactly 1 associated risk category & description"
 
     CSV.foreach(Rails.root.join('lib', 'sf_restaurants.csv'), headers: true, converters: [string_converter]) do |r|
       phone_number.add(r['phone_number'])
@@ -32,20 +32,15 @@ namespace :data_import do
       descriptions.add(r['description'])
     end
 
-    pp "City Types (#{cities.length}):"
-    pp cities
-    pp "Owner City Types (#{owner_cities.length}):"
-    pp owner_cities
-    pp "phone number lengths"
-    pp phone_number_lengths
-    pp "Inspection Types (#{inspection_types.length}):"
-    pp inspection_types
-    p "Violation type count:"
-    pp violation_types.length
-    p "violation type count = description type count?"
-    pp violation_types.length == descriptions.length
-    p "Risk Category count:"
-    pp risk_categories.length
-    pp log ? log : "a violation type only has exactly 1 associated risk category & description"
+    text = "City Types (#{cities.length}): #{cities.to_s}\n
+            Owner City Types (#{owner_cities.length}):#{owner_cities.to_s}\n
+            Phone Number Lengths: #{phone_number_lengths.to_s}\n
+            Inspection Types (#{inspection_types.length}):#{inspection_types.to_s}\n
+            Violation Types Count: (#{violation_types.length})
+            Violation type count = description type count? #{violation_types.length == descriptions.length}\n
+            Risk Category count: #{risk_categories.length}\n
+            Violation Type Info: #{log}
+            "
+    File.write(Rails.root.join('log', 'csv_analysis.txt'), text)
   end
 end
