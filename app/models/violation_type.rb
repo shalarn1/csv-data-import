@@ -12,4 +12,16 @@
 class ViolationType < ApplicationRecord
 	validates :classification_code, uniqueness: true
 	enum risk_category: %i[low moderate high]
+
+
+	def self.normalize_risk_category(risk_category)
+    case risk_category
+	  when /^low/i
+	  	:low
+	  when /^moderate/i
+	  	:moderate
+	  when /^high/i
+	  	 :high
+	  end
+	end
 end

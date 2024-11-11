@@ -170,4 +170,17 @@ namespace :data_import do
             "Violation Type Info: #{vt_log}, #{i_log}\n\n"
     File.write(Rails.root.join('log', 'csv_analysis.txt'), text << multiple_addresses_info << starbucks_info << starbucks_owner_info << phone_info)
   end
+
+  desc "Import csv data into db"
+  task import_data: :environment do
+    violation_types = Set.new
+    violation_risk_description_types = Hash.new { |h, k| h[k] = Set.new }
+    counter = 0
+    CSV.foreach(Rails.root.join('lib', 'sf_restaurants.csv'), headers: true, converters: [string_converter]) do |r|
+      # Create violation_type
+      violation_type = ViolationType.find_or_create_by(classification_code: r['violation_type'],
+                                                       risk_category: ViolationType.normalize_risk_category(r['risk_category']),
+                                                       description: r['description'])
+    end
+  end
 end
