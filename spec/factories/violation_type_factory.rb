@@ -1,7 +1,18 @@
+# == Schema Information
+#
+# Table name: violation_types
+#
+#  id          :bigint           not null, primary key
+#  class_code  :integer          not null
+#  risk        :integer          not null
+#  description :text             not null
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
 FactoryBot.define do
   factory :violation_type do
-    sequence(:classification_code) { |n| n }
-    risk_category { [:low, :moderate, :high].sample }
+    sequence(:class_code) { |n| n }
+    risk { [:low, :moderate, :high].sample }
     description { SecureRandom.hex }
   end
 end

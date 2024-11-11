@@ -9,9 +9,17 @@
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #
-class Violation < ApplicationRecord
-	validates :occurred_on, presence: true
+require 'rails_helper'
 
-	belongs_to :inspection
-	belongs_to :violation_type
+RSpec.describe Violation, type: :model do
+	describe 'validations' do
+		describe 'presence' do
+			it { should validate_presence_of :occurred_on }
+		end
+
+		describe 'association' do
+      it { should belong_to :inspection }
+      it { should belong_to :violation_type }
+    end
+	end
 end

@@ -2,12 +2,12 @@
 #
 # Table name: violation_types
 #
-#  id                  :bigint           not null, primary key
-#  classification_code :integer          not null
-#  risk_category       :integer          not null
-#  description         :text             not null
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
+#  id          :bigint           not null, primary key
+#  class_code  :integer          not null
+#  risk        :integer          not null
+#  description :text             not null
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
 #
 
 # This model initially had no columns defined. If you add columns to the

@@ -178,8 +178,8 @@ namespace :data_import do
     counter = 0
     CSV.foreach(Rails.root.join('lib', 'sf_restaurants.csv'), headers: true, converters: [string_converter]) do |r|
       # Create violation_type
-      violation_type = ViolationType.find_or_create_by(classification_code: r['violation_type'],
-                                                       risk_category: ViolationType.normalize_risk_category(r['risk_category']),
+      violation_type = ViolationType.find_or_create_by(class_code: r['violation_type'],
+                                                       risk: ViolationType.normalize_risk(r['risk_category']),
                                                        description: r['description'])
     end
   end

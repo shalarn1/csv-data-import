@@ -9,9 +9,8 @@
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #
-class Violation < ApplicationRecord
-	validates :occurred_on, presence: true
-
-	belongs_to :inspection
-	belongs_to :violation_type
+FactoryBot.define do
+  factory :violation do
+    occurred_on { 3.days.ago }
+  end
 end
