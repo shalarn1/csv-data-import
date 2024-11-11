@@ -10,8 +10,12 @@
 #  updated_at          :datetime         not null
 #
 class ViolationType < ApplicationRecord
+	validates :classification_code, :risk_category, :description, presence: true
 	validates :classification_code, uniqueness: true
-	enum risk_category: %i[low moderate high]
+	enum risk_category: %i[low medium high]
+
+	has_many :violations
+	has_many :inspections, through: :violations
 
 
 	def self.normalize_risk_category(risk_category)
@@ -19,9 +23,9 @@ class ViolationType < ApplicationRecord
 	  when /^low/i
 	  	:low
 	  when /^moderate/i
-	  	:moderate
+	  	:medium
 	  when /^high/i
-	  	 :high
+	  	:high
 	  end
 	end
 end
