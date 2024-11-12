@@ -51,27 +51,9 @@ The designed system should be able to *power a performant API* in the future t
 
 The project should work! Please include setup and running steps before submitting for review and make sure your project runs from a clean checkout.
 
+Strategy
 1. Manually parse through CSV to get general idea of db system and options
 2. Write script parses through CSV and finds all options (cities, inspection type, violation type/risk category/description). Standardize certain fields like city, postal code, owner name etc
 3. Create DB & populate enums with findings
 4. Script to parse through CSV and add to DB
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
