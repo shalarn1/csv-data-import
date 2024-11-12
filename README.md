@@ -5,6 +5,11 @@ Ruby 3.3.5 / Rails 7.0.8
 ## Install
 
 #### Clone the repository
+```shell
+git clone git@github.com:shalarn1/instrumentl.git
+cd instrumentl
+```
+
 #### Ensure ruby version and bundler are installed
 Download and install all of the Ruby gems (dependencies) in Gemfile.lock
 ```shell
