@@ -21,13 +21,14 @@ RSpec.describe Inspection, type: :model do
 			it { should validate_presence_of :category }
 		end
 
-		# describe 'uniqueness' do
-		# 	before { create :inspection }
-		# 	it { should validate_uniqueness_of(:occurred_on).scoped_to([:restaurant_id, :category]) }
-		# end
+		describe 'uniqueness' do
+			before { create :inspection }
+			it { should validate_uniqueness_of(:occurred_on).scoped_to([:restaurant_id, :category]) }
+		end
 
 		describe 'association' do
       it { should belong_to :restaurant }
+      it { should	have_many :violations }
     end
 	end
 end

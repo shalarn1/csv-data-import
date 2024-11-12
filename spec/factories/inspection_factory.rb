@@ -14,5 +14,6 @@ FactoryBot.define do
   factory :inspection do
     occurred_on { 3.days.ago }
     category { :complaint }
+    restaurant
   end
 end
