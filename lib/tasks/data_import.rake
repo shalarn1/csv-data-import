@@ -26,6 +26,7 @@ namespace :data_import do
     o_zip_codes = Set.new
     phone_numbers = Set.new
     phone_number_lengths = Set.new
+    owner_full_addresses = Set.new
 
     restaurants_to_addresses = Hash.new { |h, k| h[k] = Set.new }
     addresses_to_restaurants = Hash.new { |h, k| h[k] = Set.new }
@@ -74,14 +75,18 @@ namespace :data_import do
       phone_numbers_to_restaurants[r['phone_number']].add([r['name'], r['address']]) if r['phone_number']
       restaurants_to_phone_numbers[r['name']].add([r['phone_number'], r['address'], r['owner_name']]) if r['phone_number']
       addresses_to_phone_numbers[r['address']].add(r['phone_number']) if r['phone_number']
-
+      owner_full_addresses.add([r['owner_address'], r['owner_city'], r['owner_zip']]) if r['owner_address']
+      
       # find nonstandard and incomplete address info
       matching_address = true if r['address'] == r['owner_address']
 
       missing[:restaurant_zipcode] ||= true if r['postal_code'].nil? && r['address'].present?
       missing[:owner] ||= true if r['owner_name'].nil? && r['owner_address'].present?
+      missing[:owner_address] ||= true if r['owner_address'].nil? && r['owner_name'].present?
       missing[:owner_zipcode] ||= true if r['owner_zip'].nil? && r['owner_address'].present?
+      missing[:owner_city] ||= true if r['owner_city'].nil? && r['owner_address'].present?
       missing[:owner_state] ||= true if r['owner_state'].nil? && r['owner_address'].present?
+      missing[:owner_city_zip] ||= true if r['owner_city'].nil? && r['owner_zip'].nil? && r['owner_address'].present?
       missing[:owner_state_zip] ||= true if r['owner_state'].nil? && r['owner_zip'].nil? && r['owner_address'].present?
       
       # find possilbe relationships between restaurants, locations, owners, and owner addresses
@@ -145,6 +150,7 @@ namespace :data_import do
 
     zip_codes = r_zip_codes + o_zip_codes
     text = "Restaurant count: #{restaurant_names.length}\n"\
+           "Restaurant address count: #{restaurant_addresses.count}\n"\
            "Restaurant address can be blank? #{restaurant_addresses.include? nil}\n"\
            "Restaurant zipcode can be blank? #{r_zip_codes.include? nil}\n"\
            "Restaurant zipcode can be blank when address provided? #{missing[:restaurant_zipcode]}\n"\
@@ -152,8 +158,11 @@ namespace :data_import do
            "Restaurant owner can be blank? #{owners.include? nil}\n\n"\
            "Owner address can be blank? #{owner_addresses.include? nil}\n"\
            "Owner name can be blank when owner address provided? #{missing[:owner]}\n"\
+           "Owner address can be blank when owner name provided? #{missing[:owner]}\n"\
            "Owner zipcode can be blank when owner address provided? #{missing[:owner_zipcode]}\n"\
+           "Owner city can be blank when owner address provided? #{missing[:owner_city]}\n"\
            "Owner state can be blank when owner address provided? #{missing[:owner_state]}\n"\
+           "Owner city & zip can be blank when owner address provided? #{missing[:owner_city_zip]}\n\n"\
            "Owner state & zip can be blank when owner address provided? #{missing[:owner_state_zip]}\n\n"\
            "Restaurant & owners can have the same address? #{matching_address}\n"\
            "Restaurants/Addresses/Owners/Phone numbers:\n#{r_log}\n#{a_log}\n#{rp_log}\n"\
@@ -161,7 +170,8 @@ namespace :data_import do
            "Phone Number Lengths: #{phone_number_lengths.to_s}\n\n"\
            "City Types (#{cities.length}): #{cities.to_s}\n"\
            "Owner City Types (#{owner_cities.length}):#{owner_cities.to_s}\n\n"\
-           "Zip codes (#{zip_codes.length}): #{zip_codes.to_s}\n\n"\
+           "Zip codes (#{zip_codes.length}): #{zip_codes.to_s}\n"\
+           "2 owner zipcodes are missing, 1 owner zipcode is invalid\n\n"\
            "Inspection Types (#{inspection_types.length}):#{inspection_types.to_s}\n"\
            "All inspections have an inspection type? #{!inspection_types.include?(nil)}\n"\
            "Violation Types Count: (#{violation_types.length})\n"\
@@ -173,14 +183,45 @@ namespace :data_import do
 
   desc "Import csv data into db"
   task import_data: :environment do
-    violation_types = Set.new
-    violation_risk_description_types = Hash.new { |h, k| h[k] = Set.new }
-    counter = 0
     CSV.foreach(Rails.root.join('lib', 'sf_restaurants.csv'), headers: true, converters: [string_converter]) do |r|
-      # Create violation_type
+      # Find or create new violation_type
       violation_type = ViolationType.find_or_create_by(class_code: r['violation_type'],
                                                        risk: ViolationType.normalize_risk(r['risk_category']),
                                                        description: r['description'])
+      # Find or create restaurant address & owner address
+      restaurant_address = Address.find_or_initialize_by(street: r['address'], postal_code: r['postal_code'])
+      if restaurant_address.id.nil?
+        restaurant_address.city = r['city']
+        restaurant_address.state = 'CA'
+        restaurant_address.save!
+      end
+
+      # Find or create owner & owner address
+      # if there's an owner there is an owner address
+      if r['owner']
+        if r['owner_address'] == r['address']
+          address = restaurant_address
+        else
+          address = Address.find_or_initialize_by(street: r['owner_address'], postal_code: r['owner_zip'])
+          address.city = r['owner_city']
+          address.state = r['owner_state']
+          save!
+        end
+        owner = owner.find_or_create_by(name: r['owner'], address: address)
+      end
+
+      restaurant = Restaurant.find_or_intialize_by(name: r['name'], address: restaurant_address)
+      if restaurant.id.nil?
+        restaurant.phone_number = r['phone_number']
+        restaurant.owner = owner if owner
+        restaurant.save!
+      end
+
+      inspection = restaurant.inspections.find_or_initialize_by(occurred_on: r['inspection_date'], category: r['inspection_type'])
+      inspection.score = r['inspection_score']
+      inspection.save!
+
+      inspection.violations.create!(violation_type: violation_type, occurred_on: r['violation_date'])
     end
   end
 end
