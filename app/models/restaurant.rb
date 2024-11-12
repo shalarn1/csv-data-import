@@ -16,5 +16,6 @@ class Restaurant < ApplicationRecord
 	# TODO add phone number validation
 
 	belongs_to :address
-	belongs_to :owner
+	belongs_to :owner, optional: true
+	has_many :inspections
 end

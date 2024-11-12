@@ -11,6 +11,7 @@
 #
 class Violation < ApplicationRecord
 	validates :occurred_on, presence: true
+	# TODO validate occurred_on is the same value aas inspecion_occurred_on
 
 	belongs_to :inspection
 	belongs_to :violation_type

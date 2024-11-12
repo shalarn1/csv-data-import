@@ -158,7 +158,7 @@ namespace :data_import do
            "Restaurant owner can be blank? #{owners.include? nil}\n\n"\
            "Owner address can be blank? #{owner_addresses.include? nil}\n"\
            "Owner name can be blank when owner address provided? #{missing[:owner]}\n"\
-           "Owner address can be blank when owner name provided? #{missing[:owner]}\n"\
+           "Owner address can be blank when owner name provided? #{missing[:owner_address]}\n"\
            "Owner zipcode can be blank when owner address provided? #{missing[:owner_zipcode]}\n"\
            "Owner city can be blank when owner address provided? #{missing[:owner_city]}\n"\
            "Owner state can be blank when owner address provided? #{missing[:owner_state]}\n"\
@@ -189,35 +189,39 @@ namespace :data_import do
                                                        risk: ViolationType.normalize_risk(r['risk_category']),
                                                        description: r['description'])
       # Find or create restaurant address & owner address
-      restaurant_address = Address.find_or_initialize_by(street: r['address'], postal_code: r['postal_code'])
+      restaurant_address = Address.find_or_initialize_by(street: r['address'], 
+                                                         postal_code: Address.normalize_postal_code(r['postal_code']))
       if restaurant_address.id.nil?
-        restaurant_address.city = r['city']
+        restaurant_address.city = Address.normalize_city(r['city'])
         restaurant_address.state = 'CA'
         restaurant_address.save!
       end
 
       # Find or create owner & owner address
-      # if there's an owner there is an owner address
-      if r['owner']
+      if r['owner_name']
         if r['owner_address'] == r['address']
           address = restaurant_address
-        else
-          address = Address.find_or_initialize_by(street: r['owner_address'], postal_code: r['owner_zip'])
-          address.city = r['owner_city']
-          address.state = r['owner_state']
-          save!
+        elsif r['owner_address']
+          postal_code_city = r['owner_zip'].nil? ? r['owner_city'] : nil
+          address = Address.find_or_initialize_by(street: r['owner_address'], 
+                                                  postal_code: Address.normalize_postal_code(r['owner_zip'], city: postal_code_city))
+          if address.id.nil?
+            address.city = Address.normalize_city(r['owner_city'])
+            address.state = r['owner_state']
+            address.save!
+          end
         end
-        owner = owner.find_or_create_by(name: r['owner'], address: address)
+        owner = Owner.find_or_create_by!(name: Owner.normalize_name(r['owner_name']), address: address)
       end
 
-      restaurant = Restaurant.find_or_intialize_by(name: r['name'], address: restaurant_address)
+      restaurant = Restaurant.find_or_initialize_by(name: r['name'], address: restaurant_address)
       if restaurant.id.nil?
         restaurant.phone_number = r['phone_number']
         restaurant.owner = owner if owner
         restaurant.save!
       end
 
-      inspection = restaurant.inspections.find_or_initialize_by(occurred_on: r['inspection_date'], category: r['inspection_type'])
+      inspection = restaurant.inspections.find_or_initialize_by(occurred_on: r['inspection_date'], category: Inspection.normalize_category(r['inspection_type']))
       inspection.score = r['inspection_score']
       inspection.save!
 
