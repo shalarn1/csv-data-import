@@ -1,3 +1,13 @@
+# == Schema Information
+#
+# Table name: owners
+#
+#  id         :bigint           not null, primary key
+#  name       :string           not null
+#  address_id :bigint
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
 require 'rails_helper'
 
 RSpec.describe Owner, type: :model do
@@ -12,10 +22,10 @@ RSpec.describe Owner, type: :model do
 		end
 
 		describe 'association' do
-      it { should belong_to :address }
+      it { should belong_to(:address).optional }
       it { should have_many :restaurants }
     end
 	end
 
-	# TODO write normalize_name spec
+	# TODO ::normalize_name spec
 end

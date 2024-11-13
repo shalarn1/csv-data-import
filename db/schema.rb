@@ -16,10 +16,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_11_08_234846) do
 
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
-    t.string "city"
-    t.string "state"
+    t.string "city", null: false
+    t.string "state", null: false
     t.string "postal_code", null: false
-    t.string "country", default: "us"
+    t.string "country", default: "US"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["street", "postal_code"], name: "index_addresses_on_street_and_postal_code", unique: true
@@ -54,7 +54,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_11_08_234846) do
     t.datetime "updated_at", null: false
     t.index ["address_id"], name: "index_restaurants_on_address_id"
     t.index ["name", "address_id"], name: "index_restaurants_on_name_and_address_id", unique: true
-    t.index ["name"], name: "index_restaurants_on_name"
     t.index ["owner_id"], name: "index_restaurants_on_owner_id"
   end
 

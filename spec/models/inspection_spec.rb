@@ -31,4 +31,6 @@ RSpec.describe Inspection, type: :model do
       it { should	have_many :violations }
     end
 	end
+
+	# TODO spec for ::normalize_category
 end

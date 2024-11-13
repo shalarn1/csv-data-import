@@ -13,7 +13,7 @@
 class Inspection < ApplicationRecord
 	validates :occurred_on, :category, presence: true
 	validates_uniqueness_of :occurred_on, scope: [:restaurant_id, :category]
-	# TODO validatie score
+	# TODO validate score
 
 	enum category: %i[routine_unscheduled routine_scheduled reinspection_follow_up
 										foodborne_illness_investigation non_inspection_site_visit complaint new_ownership]

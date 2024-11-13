@@ -15,7 +15,6 @@ class Owner < ApplicationRecord
 	belongs_to :address, optional: true
 	has_many :restaurants
 
-	private
 	def self.normalize_name(name)
 		case name
 		when 'STARBUCKS COFFEE COMPANY', 'STARBUCKS COFFEE CO.', 'STARBUCKS CORP', 'Starbucks Coffee Company', 'Starbucks Coffee Co', 'STARBUCKS COFFEE CORP', 'Starbucks Corporation'

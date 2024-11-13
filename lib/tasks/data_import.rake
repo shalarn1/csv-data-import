@@ -183,24 +183,30 @@ namespace :data_import do
 
   desc "Import csv data into db"
   task import_data: :environment do
+    p "Beginning processing. This may take awhile..."
+    entry_count = 0
     CSV.foreach(Rails.root.join('lib', 'sf_restaurants.csv'), headers: true, converters: [string_converter]) do |r|
-      # Find or create new violation_type
+      entry_count += 1
+      p "Processed #{entry_count} entries..." if entry_count%1000 == 0
+
+      ### Find or create new violation_type
       violation_type = ViolationType.find_or_create_by(class_code: r['violation_type'],
                                                        risk: ViolationType.normalize_risk(r['risk_category']),
                                                        description: r['description'])
-      # Find or create restaurant address & owner address
+      
+      ### Find or create restaurant address & owner address
       restaurant_address = Address.find_or_initialize_by(street: r['address'], 
                                                          postal_code: Address.normalize_postal_code(r['postal_code']))
       if restaurant_address.id.nil?
         restaurant_address.city = Address.normalize_city(r['city'])
-        restaurant_address.state = 'CA'
+        restaurant_address.state = 'CA' # since all restaurants are in SF. Determine from zipcode if using an address validator API
         restaurant_address.save!
       end
 
-      # Find or create owner & owner address
+      ### Find or create owner & owner address
       if r['owner_name']
         if r['owner_address'] == r['address']
-          address = restaurant_address
+          address = restaurant_address # since restaurant address data was cleaner than owner address address
         elsif r['owner_address']
           postal_code_city = r['owner_zip'].nil? ? r['owner_city'] : nil
           address = Address.find_or_initialize_by(street: r['owner_address'], 
@@ -214,6 +220,7 @@ namespace :data_import do
         owner = Owner.find_or_create_by!(name: Owner.normalize_name(r['owner_name']), address: address)
       end
 
+      ### Find or create restaurants
       restaurant = Restaurant.find_or_initialize_by(name: r['name'], address: restaurant_address)
       if restaurant.id.nil?
         restaurant.phone_number = r['phone_number']
@@ -221,6 +228,7 @@ namespace :data_import do
         restaurant.save!
       end
 
+      ### Find or create inspections & violations
       inspection = restaurant.inspections.find_or_initialize_by(occurred_on: r['inspection_date'], category: Inspection.normalize_category(r['inspection_type']))
       inspection.score = r['inspection_score']
       inspection.save!

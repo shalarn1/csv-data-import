@@ -25,6 +25,11 @@ RSpec.describe ViolationType, type: :model do
 			before { create :violation_type }
 			it { should validate_uniqueness_of :class_code }
 		end
+
+		describe 'association' do
+      it { should	have_many :violations }
+      it { should have_many :inspections }
+    end
   end
 
   describe '::normalize_risk' do
