@@ -10,9 +10,9 @@
 #  updated_at        :datetime         not null
 #
 class Violation < ApplicationRecord
-	validates :occurred_on, presence: true
-	# TODO validate occurred_on is the same value as inspection.occurred_on
+  validates :occurred_on, presence: true
+  # TODO validate occurred_on is the same value as inspection.occurred_on
 
-	belongs_to :inspection
-	belongs_to :violation_type
+  belongs_to :inspection
+  belongs_to :violation_type
 end

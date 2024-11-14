@@ -11,13 +11,13 @@
 #  updated_at   :datetime         not null
 #
 class Restaurant < ApplicationRecord
-	validates :name, presence: true
-	validates_uniqueness_of :name, scope: [:address_id]
-	# TODO add phone number validation
+  validates :name, presence: true
+  validates_uniqueness_of :name, scope: [:address_id]
+  # TODO add phone number validation
 
-	belongs_to :address
-	belongs_to :owner, optional: true
+  belongs_to :address
+  belongs_to :owner, optional: true
 
-	has_many :inspections
-	has_many :violations, through: :inspections
+  has_many :inspections
+  has_many :violations, through: :inspections
 end

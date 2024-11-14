@@ -12,14 +12,14 @@
 require 'rails_helper'
 
 RSpec.describe Violation, type: :model do
-	describe 'validations' do
-		describe 'presence' do
-			it { should validate_presence_of :occurred_on }
-		end
+  describe 'validations' do
+    describe 'presence' do
+      it { should validate_presence_of :occurred_on }
+    end
 
-		describe 'association' do
+    describe 'association' do
       it { should belong_to :inspection }
       it { should belong_to :violation_type }
     end
-	end
+  end
 end

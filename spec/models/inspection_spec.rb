@@ -13,24 +13,24 @@
 require 'rails_helper'
 
 RSpec.describe Inspection, type: :model do
-		describe 'validations' do
-		it { should define_enum_for :category }
+  describe 'validations' do
+    it { should define_enum_for :category }
 
-		describe 'presence' do
-			it { should validate_presence_of :occurred_on }
-			it { should validate_presence_of :category }
-		end
+    describe 'presence' do
+      it { should validate_presence_of :occurred_on }
+      it { should validate_presence_of :category }
+    end
 
-		describe 'uniqueness' do
-			before { create :inspection }
-			it { should validate_uniqueness_of(:occurred_on).scoped_to([:restaurant_id, :category]) }
-		end
+    describe 'uniqueness' do
+      before { create :inspection }
+      it { should validate_uniqueness_of(:occurred_on).scoped_to([:restaurant_id, :category]) }
+    end
 
-		describe 'association' do
+    describe 'association' do
       it { should belong_to :restaurant }
       it { should	have_many :violations }
     end
-	end
+  end
 
-	# TODO spec for ::normalize_category
+  # TODO spec for ::normalize_category
 end
