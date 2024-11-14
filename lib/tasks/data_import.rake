@@ -5,6 +5,7 @@ namespace :data_import do
 
   desc "Identify possible values and relationships"
   task analyze_csv: :environment do
+    p "Beginning processing. Analyzing csv..."
     # data stores for inspection & violation types
     inspection_types = Set.new
     violation_types = Set.new
@@ -195,8 +196,12 @@ namespace :data_import do
                                                        description: r['description'])
       
       ### Find or create restaurant address & owner address
-      restaurant_address = Address.find_or_initialize_by(street: r['address'], 
-                                                         postal_code: Address.normalize_postal_code(r['postal_code']))
+      normalized_restaurant_address = Address.normalize_street(r['address'])
+      normalized_owner_address = Address.normalize_street(r['owner_address'])
+      normalized_postal_code = Address.normalize_postal_code(r['postal_code'])
+
+      restaurant_address = Address.find_or_initialize_by(street: normalized_restaurant_address, 
+                                                         postal_code: normalized_postal_code)
       if restaurant_address.id.nil?
         restaurant_address.city = Address.normalize_city(r['city'])
         restaurant_address.state = 'CA' # since all restaurants are in SF. Determine from zipcode if using an address validator API
@@ -205,7 +210,7 @@ namespace :data_import do
 
       ### Find or create owner & owner address
       if r['owner_name']
-        if r['owner_address'] == r['address']
+        if normalized_owner_address == normalized_restaurant_address
           address = restaurant_address # since restaurant address data was cleaner than owner address address
         elsif r['owner_address']
           postal_code_city = r['owner_zip'].nil? ? r['owner_city'] : nil

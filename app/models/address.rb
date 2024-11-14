@@ -19,6 +19,15 @@ class Address < ApplicationRecord
 	has_many :restaurants
 	has_many :owners
 
+	def self.normalize_street(street)
+  	street&.downcase&.strip
+  				&.gsub(/\s+/, ' ')
+  				&.gsub(/\./, '')
+  				&.gsub(/\bSt\b/, 'Street')
+  				&.gsub(/\bAve\b/, 'Avenue')
+  				&.titleize
+	end
+
 	def self.normalize_city(city)
 		case city
 		when "San Francisco", "S.F.", "SAN FRANCISCO", "SF", "SAN FANCISCO", "san francisco"
