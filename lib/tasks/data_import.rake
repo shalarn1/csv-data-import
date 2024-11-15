@@ -5,7 +5,8 @@ namespace :data_import do
   task import_data: :environment do
     p "Beginning processing. This may take awhile..."
     entry_count = 0
-    CSV.foreach(Rails.root.join('lib', 'sf_restaurants.csv'), headers: true, converters: [Normalizer::STRING_CONVERTER]) do |r|
+    CSV.foreach(Rails.root.join('lib', 'sf_restaurants.csv'), headers: true,
+                                                              converters: [Normalizer::STRING_CONVERTER]) do |r|
       entry_count += 1
       p "Processed #{entry_count} entries..." if entry_count % 1000 == 0
 

@@ -49,7 +49,8 @@ namespace :analysis do
     oa_log = "owners have exactly 1 address"
 
     # analyze data in csv to understand how to design the db
-    CSV.foreach(Rails.root.join('lib', 'sf_restaurants.csv'), headers: true, converters: [Normalizer::STRING_CONVERTER]) do |r|
+    CSV.foreach(Rails.root.join('lib', 'sf_restaurants.csv'), headers: true,
+                                                              converters: [Normalizer::STRING_CONVERTER]) do |r|
       Normalizer.normalize_row(r)
 
       # find all possible unique values for inspection types & violation types

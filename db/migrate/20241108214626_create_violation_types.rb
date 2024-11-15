@@ -8,6 +8,7 @@ class CreateViolationTypes < ActiveRecord::Migration[7.0]
       t.timestamps null: false
     end
 
-    add_index :violation_types, [:class_code, :risk, :description], unique: true, name: :index_violation_types_on_unique_fields
+    add_index :violation_types, [:class_code, :risk, :description], unique: true,
+                                                                    name: :index_violation_types_on_unique_fields
   end
 end

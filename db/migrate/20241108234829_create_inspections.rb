@@ -10,6 +10,7 @@ class CreateInspections < ActiveRecord::Migration[7.0]
       t.timestamps null: false
     end
 
-    add_index :inspections, [:restaurant_id, :occurred_on, :category], unique: true, name: :index_inspections_on_search_fields
+    add_index :inspections, [:restaurant_id, :occurred_on, :category], unique: true,
+                                                                       name: :index_inspections_on_search_fields
   end
 end
