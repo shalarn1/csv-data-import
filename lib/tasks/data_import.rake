@@ -11,7 +11,7 @@ namespace :data_import do
 
       ### Normalize fields
       Normalizer.normalize_row(r)
-      
+
       ### Find or create new violation_type
       violation_type = ViolationType.find_or_create_by(class_code: r['violation_type'],
                                                        risk: r['risk_category'],
