@@ -13,19 +13,8 @@ class ViolationType < ApplicationRecord
   validates :class_code, :risk, :description, presence: true
   validates :class_code, uniqueness: true
 
-  enum risk: %i[low medium high]
+  enum risk: %i[low moderate high]
 
   has_many :violations
   has_many :inspections, through: :violations
-
-  def self.normalize_risk(risk)
-    case risk
-    when /^low/i
-      :low
-    when /^moderate/i
-      :medium
-    when /^high/i
-      :high
-    end
-  end
 end

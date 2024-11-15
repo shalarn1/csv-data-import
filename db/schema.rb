@@ -17,7 +17,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_11_08_234846) do
   create_table "addresses", force: :cascade do |t|
     t.string "street", null: false
     t.string "city", null: false
-    t.string "state", null: false
+    t.string "state"
     t.string "postal_code", null: false
     t.string "country", default: "US"
     t.datetime "created_at", null: false
@@ -67,7 +67,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_11_08_234846) do
   end
 
   create_table "violations", force: :cascade do |t|
-    t.date "occurred_on", null: false
     t.bigint "violation_type_id", null: false
     t.bigint "inspection_id", null: false
     t.datetime "created_at", null: false
