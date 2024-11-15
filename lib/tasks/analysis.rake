@@ -4,6 +4,7 @@ namespace :analysis do
   desc "Identify possible values and relationships"
   task analyze_csv: :environment do
     p "Beginning processing. Analyzing csv..."
+
     # data stores for inspection & violation types
     inspection_types = Set.new
     inspection_scores = Set.new

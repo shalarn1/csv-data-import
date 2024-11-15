@@ -9,25 +9,6 @@ Ruby 3.3.5 / Rails 7.0.8
 git clone git@github.com:shalarn1/instrumentl.git
 cd instrumentl
 ```
-
-# Local development without Docker
-
-### Ensure ruby version and bundler are installed, initialize the database & import data. Analyze_csv is not necessary to run
-```shell
-bundle install
-bundle exec rake db:create
-bundle exec rake db:setup
-bundle exec rake data_import:import_data
-bundle exec rake data_import:analyze_csv
-```
-
-### To start the rails console and/or server
-Make sure postgres is running
-```shell
-bundle exec rails console
-bundle exec rails server
-```
-
 # Local development with Docker
 
 The only local depedency should be Docker.
@@ -60,7 +41,7 @@ Build image and install app dependencies:
 `docker compose run web rspec spec/models/*.rb`
 
 ### Analyze data from csv (not necessary to populate db)
-`docker compose run web bin/rails data_import:analyze_csv`
+`docker compose run web bin/rails analysis:analyze_csv`
 
 Troubleshooting if needed,
 
@@ -80,21 +61,44 @@ Troubleshooting if needed,
 
 `docker compose run web bundle install`
 
+# Local development without Docker
+
+### Ensure ruby version and bundler are installed, initialize the database & import data. Analyze_csv is not necessary to run
+```shell
+bundle install
+bundle exec rake db:create
+bundle exec rake db:setup
+bundle exec rake data_import:import_data
+bundle exec rake data_import:analyze_csv
+```
+
+### To start the rails console and/or server
+Make sure postgres is running
+```shell
+bundle exec rails console
+bundle exec rails server
+```
+
 #### Notes
 Relevant files for review:
 
 `lib/data_import.rake`
 `db/migrate/*.rb`
 `app/models/*.rb`
+`app/lib/*.rb`
 `db/schema.rb`
 
 `spec/factories/*.rb`
 `spec/models/*.rb`
+`spec/lib/*.rb`
+
+`lib/analysis.rake` - optional, just my scratchwork
 
 `Gemfile`
 `Dockerfile`
 `docker-compose.yml`
 `config/database.yml`
+
 
 
 Go to http://localhost:3000 in your browser
@@ -120,15 +124,21 @@ Strategy
 3. Create DB & populate enums with findings
 4. Script to parse through CSV and add to DB. Attempt to standardize certain fields like city, postal code, owner name, some restaurant names etc
 
-I only found inconsistent data in a handful of places so I decided to sanitize on db entry instead of writing a cleaner CSV and using that for the data entry as I didn't think it made sense to write a new 5000 entry csv for just a couple entries.
+I only found inconsistent data in a handful of places so I decided to sanitize on db entry vs writing a new cleaner CSV to use for data entry.
 
-If I spent more time on this, 
+I made the baseline assumption that the provided CSV data is the only dataset that will be imported. Upon importing a new CSV, the system would need to be able to address non-matching data for model definitions such as the enums and non-null columns.
 
-1) Potentially create a RestaurantGroup type for restaurants of the same name but with multiple addresses as well as updating the Owner/Address relationship to be many-to-many, probably a join table on restaurant_id/owner_id/address_id where address is the particular owner's address that's associated with that restaurant location. I decided to create a new entry for each name/address pair for both restaurants and owners, keeping the many-to-one relationship I originally established. In the case of inspections it's maybe ok/relevant to keep the database simple with distinct restaurants/address and owner/address pairs rather than to keep track of an entity with many addresses.  I normalized the some of the names so at least all the addresses could come up for the same owner if needed.
+Notes, 
 
-2) Integrate with Google Address Validator API. I tried to implement it but I couldn't get it working due to some conflicting dependencies and I wasn't sure if it was worth the trouble. I tried to normalize the data the best I could without it but I've probably missed a few.
+1) Without a defined API it's hard to know what to optimize for, performance wise. I decided on indexes based on the looks up in the import script and what was the most reliable information to identify unique entries (ie street/postal code, name/address).
 
+2) It could use a RestaurantGroup to cover all the restaurants with the same name but different addresses and it could support a many-to-many relationship for owners and addresses (a join table on restaurant_id/owner_id/address_id where address is the corresponds to the owner's address).
 
-3) Define all normalizing methods in a separate file in /lib. I was hopeful that I could normalize the fields using ActiveRecord callbacks but that didn't work out because the normalization doesn't apply to the find portion and find_and_create. So, I just converted them to class methods on the model in the interest of time. The most ideal option may have been to define a method find_or_create_normalized or maybe add a scope for the find so the normalization could be kept in the active record callbacks.
+In this context the extra complexity didn't seem necessary so I opt-ed for a more simple one-to-many relationship with distinct restaurants/address and owner/address pairs. 
+
+3) It could use the Google Address Validator API. This would make sure that addresses are accurate and there aren't unnecessary duplicates in the DB. However, it does add an increased cost and a third party API call to what’s currently a synchronous task, so it depends if the added accuracy was worth the tradeoffs
+
+4) I opted for a more basic approach to data normalization to cover all the edge cases for this data. I normalized some fields on the address and owner but I preserved the restaurant names for the most part. This may cause some data integrity issues as the fields are not perfectly consistent. I combed through data to determine the safest assumptions to make. For some user input data, it may be more beneficial preserve duplicates rather than potentially lose distinguishing data unless we are certain of an error.
+
 
 
