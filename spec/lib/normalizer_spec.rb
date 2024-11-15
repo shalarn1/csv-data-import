@@ -5,9 +5,11 @@ describe Normalizer do
   describe '::normalize_street' do
     it 'removes periods, normalizes abbreviations, and capitalizes' do
       expect(Normalizer.normalize_street('123 Main St.')).to eq('123 MAIN STREET')
-      expect(Normalizer.normalize_street('123 Main St')).to eq('123 MAIN STREET')
+      expect(Normalizer.normalize_street('123 Main ST')).to eq('123 MAIN STREET')
+      expect(Normalizer.normalize_street('123 Main st')).to eq('123 MAIN STREET')
       expect(Normalizer.normalize_street('890 Oak Ave.')).to eq('890 OAK AVENUE')
       expect(Normalizer.normalize_street('890 Oak Ave')).to eq('890 OAK AVENUE')
+      expect(Normalizer.normalize_street('890 Oak AVE')).to eq('890 OAK AVENUE')
       expect(Normalizer.normalize_street('567 Elm Street')).to eq('567 ELM STREET')
       expect(Normalizer.normalize_street('123 4th Avenue')).to eq('123 4TH AVENUE')
     end

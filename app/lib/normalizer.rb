@@ -38,8 +38,8 @@ module Normalizer
 
     def normalize_street(street)
       street&.gsub(/\./, '')
-            &.gsub(/\bSt\b/, 'Street')
-            &.gsub(/\bAve\b/, 'Avenue')
+            &.gsub(/\bSt\b/i, 'Street')
+            &.gsub(/\bAve\b/i, 'Avenue')
             &.upcase
     end
 

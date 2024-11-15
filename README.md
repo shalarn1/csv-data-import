@@ -42,6 +42,12 @@ docker compose run web rspec spec/lib/*.rb
 docker compose run web bin/rails db:purge
 docker compose run web bin/rails db:schema:load
 
+# OR
+docker compose run web bin/rails db:drop
+docker compose run web bin/rails db:create
+docker compose run web bin/rails db:schema:load
+
+
 # DB migration
 docker compose run web bin/rails db:migrate
 

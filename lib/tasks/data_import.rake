@@ -19,8 +19,6 @@ namespace :data_import do
                                                        description: r['description'])
 
       ### Find or create restaurant address & owner address
-      normalized_owner_address = Address.normalize_street(r['owner_address'])
-
       restaurant_address = Address.find_or_initialize_by(street: r['address'],
                                                          postal_code: r['postal_code'])
       if restaurant_address.id.nil?
