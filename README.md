@@ -106,13 +106,11 @@ Notes,
 
 1) Without a defined API it's hard to know what to optimize for, performance wise. I decided on indexes based on the looks up in the import script and what was the most reliable information to identify unique entries (ie street/postal code, name/address).
 
-2) It could use a RestaurantGroup to cover all the restaurants with the same name but different addresses and it could support a many-to-many relationship for owners and addresses (a join table on restaurant_id/owner_id/address_id where address is the corresponds to the owner's address).
-
-In this context the extra complexity didn't seem necessary so I opt-ed for a more simple one-to-many relationship with distinct restaurants/address and owner/address pairs. 
+2) It could use a RestaurantGroup to cover all the restaurants with the same name but different addresses and it could support a many-to-many relationship for owners and addresses (a join table on restaurant_id/owner_id/address_id where address is the corresponds to the owner's address). In this context the extra complexity didn't seem necessary so I opt-ed for a more simple one-to-many relationship with distinct restaurants/address and owner/address pairs. 
 
 3) It could use the Google Address Validator API. This would make sure that addresses are accurate and there aren't unnecessary duplicates in the DB. However, it does add an increased cost and a third party API call to what’s currently a synchronous task, so it depends if the added accuracy was worth the tradeoffs
 
-4) I opted for a more basic approach to data normalization to cover all the edge cases for this data. I normalized some fields on the address and owner but I preserved the restaurant names for the most part. This may cause some data integrity issues as the fields are not perfectly consistent. I combed through data to determine the safest assumptions to make. For some user input data, it may be more beneficial preserve duplicates rather than potentially lose distinguishing data unless we are certain of an error.
+4) I opted for a more basic approach to data normalization to cover all the edge cases for this data. I normalized some fields on the address and owner but I preserved the restaurant names for the most part. This may cause some data integrity issues as the fields are not perfectly consistent. I combed through data to determine the safest assumptions to make. For some user input data, it may be more beneficial to preserve duplicates rather than potentially lose distinguishing data unless we are certain of an error.
 
 
 
