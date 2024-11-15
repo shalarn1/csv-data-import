@@ -26,11 +26,14 @@ RSpec.describe Inspection, type: :model do
       it { should validate_uniqueness_of(:occurred_on).scoped_to([:restaurant_id, :category]) }
     end
 
+    describe 'inclusion' do
+      it { should validate_inclusion_of(:score).in_range(0..100) }
+      it { should allow_value(nil).for(:score) }
+    end
+
     describe 'association' do
       it { should belong_to :restaurant }
       it { should	have_many :violations }
     end
   end
-
-  # TODO spec for ::normalize_category
 end

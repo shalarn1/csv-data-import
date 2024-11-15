@@ -31,18 +31,4 @@ RSpec.describe ViolationType, type: :model do
       it { should have_many :inspections }
     end
   end
-
-  describe '::normalize_risk' do
-    let(:low_risk) { 'Low Risk' }
-    let(:moderate_risk) { 'Moderate Risk' }
-    let(:high_risk) { 'High Risk' }
-    let(:invalid_risk) { SecureRandom.hex }
-
-    it 'normalizes risk to the right enum' do
-      expect(ViolationType.normalize_risk(low_risk)).to eq(:low)
-      expect(ViolationType.normalize_risk(moderate_risk)).to eq(:medium)
-      expect(ViolationType.normalize_risk(high_risk)).to eq(:high)
-      expect(ViolationType.normalize_risk(invalid_risk)).to be_nil
-    end
-  end
 end

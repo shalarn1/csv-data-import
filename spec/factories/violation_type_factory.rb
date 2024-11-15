@@ -12,7 +12,7 @@
 FactoryBot.define do
   factory :violation_type do
     sequence(:class_code) { |n| n }
-    risk { [:low, :medium, :high].sample }
+    risk { [:low, :moderate, :high].sample }
     description { SecureRandom.hex }
   end
 end

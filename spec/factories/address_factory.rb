@@ -5,7 +5,7 @@
 #  id          :bigint           not null, primary key
 #  street      :string           not null
 #  city        :string           not null
-#  state       :string           not null
+#  state       :string
 #  postal_code :string           not null
 #  country     :string           default("US")
 #  created_at  :datetime         not null

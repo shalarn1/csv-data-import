@@ -16,7 +16,7 @@ gem "pg", "~> 1.1"
 gem "puma", "~> 5.0"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
+gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]
 
 # silence warnings
 gem 'logger'
@@ -25,10 +25,11 @@ gem 'ostruct'
 gem 'bigdecimal'
 gem 'mutex_m'
 gem 'csv'
+gem 'phonelib'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri mingw x64_mingw ]
+  gem "debug", platforms: %i[mri mingw x64_mingw]
   gem 'rspec-rails', '~> 7.0.0'
   gem 'factory_bot_rails', '~>6.4.4'
 end

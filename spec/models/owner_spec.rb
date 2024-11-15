@@ -26,6 +26,4 @@ RSpec.describe Owner, type: :model do
       it { should have_many :restaurants }
     end
   end
-
-  # TODO ::normalize_name spec
 end

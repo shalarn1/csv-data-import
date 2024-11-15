@@ -13,7 +13,7 @@
 class Restaurant < ApplicationRecord
   validates :name, presence: true
   validates_uniqueness_of :name, scope: [:address_id]
-  # TODO add phone number validation
+  validates :phone_number, phone: { possible: true }, allow_blank: true
 
   belongs_to :address
   belongs_to :owner, optional: true
