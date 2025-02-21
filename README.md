@@ -6,8 +6,8 @@ Ruby 3.3.5 / Rails 7.0.8
 
 ### Clone the repository
 ```shell
-git clone git@github.com:shalarn1/instrumentl.git
-cd instrumentl
+git clone https://github.com/shalarn1/csv-data-import.git
+cd csv-data-import
 ```
 ### Local development with Docker
 
